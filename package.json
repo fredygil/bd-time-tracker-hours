@@ -1,0 +1,27 @@
+{
+  "name": "bd-time-tracker-hours",
+  "version": "1.0.0",
+  "description": "BairesDev Time Tracker",
+  "main": "track.js",
+  "dependencies": {
+    "puppeteer": "^10.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fredygil/bd-time-tracker-hours.git"
+  },
+  "keywords": [
+    "bairesdev",
+    "timetracker"
+  ],
+  "author": "Cesar Fredy Gil Mejia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fredygil/bd-time-tracker-hours/issues"
+  },
+  "homepage": "https://github.com/fredygil/bd-time-tracker-hours#readme"
+}
