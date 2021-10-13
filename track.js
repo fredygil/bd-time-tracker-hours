@@ -4,10 +4,18 @@ const fs = require('fs');
 const TT_URL = 'https://timetracker.bairesdev.com';
 
 const login = async (page) => {
+    if (!process.env.TT_USERNAME) {
+        console.error('TT_USERNAME environment variable is not defined');
+        return { status: 'error', error: 'TT_USERNAME environment variable is not defined' }
+    }
+    if (!process.env.TT_PASSWORD) {
+        console.error('TT_PASSWORD environment variable is not defined');
+        return { status: 'error', error: 'TT_PASSWORD environment variable is not defined' }
+    }
     try {
-        await page.type('input[name="ctl00$ContentPlaceHolder$UserNameTextBox"]', process.env.TT_USERNAME);
-        await page.type('input[name="ctl00$ContentPlaceHolder$PasswordTextBox"]', process.env.TT_PASSWORD);
-        await page.click('input[name="ctl00$ContentPlaceHolder$LoginButton"]');
+        await page.type('#ctl00_ContentPlaceHolder_UserNameTextBox', process.env.TT_USERNAME);
+        await page.type('#ctl00_ContentPlaceHolder_PasswordTextBox', process.env.TT_PASSWORD);
+        await page.click('#ctl00_ContentPlaceHolder_LoginButton');
         return { status: 'ok' }
     } catch (e) {
         console.error(e);
@@ -88,15 +96,17 @@ const processTrackData = async (page, filePath) => {
     // Open time tracker page
     const page = await browser.newPage();
     await page.goto(TT_URL);
+    ;
 
     // Log in with credentials in environment
-    login(page);
+    const result = await login(page);
+    if (result.status === 'ok') {
+        // Waits until navigates to next page
+        await page.waitForNavigation();
 
-    // Waits until navigates to next page
-    await page.waitForNavigation();
-
-    // Process file with data to track
-    await processTrackData(page, process.argv[2] || '');
+        // Process file with data to track
+        await processTrackData(page, process.argv[2] || '');
+    }
 
     // Close
     await page.waitForTimeout(1000);
