@@ -1,6 +1,8 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
+const dotenv = require('dotenv');
 
+dotenv.config();
 const TT_URL = 'https://timetracker.bairesdev.com';
 
 const login = async (page) => {

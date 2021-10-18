@@ -4,6 +4,7 @@
   "description": "BairesDev Time Tracker",
   "main": "track.js",
   "dependencies": {
+    "dotenv": "^10.0.0",
     "puppeteer": "^10.4.0"
   },
   "devDependencies": {},
