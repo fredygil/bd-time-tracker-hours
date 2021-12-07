@@ -27,19 +27,31 @@ const login = async (page) => {
 
 const searchOption = async (page, selector, text) => {
     const options = await page.$$eval(`${selector} option`, options => options.map(option => ({ text: option.text, value: option.value })));
-    const resultOption = options.find(option => option.text === text);
+    //console.log(options);
+    //console.log(text);
+    const resultOption = options.find(option => option.text.includes(text));
+    //console.log(resultOption);
     return resultOption ? resultOption.value : null;
 };
 
 const assignSelectValueFromText = async (page, selector, text) => {
-    await page.waitForSelector(selector);
+    await page.waitForSelector('select'+selector+':not([disabled])'); 
     const value = await searchOption(page, selector, text);
     if (value) {
         await page.select(selector, value);
     }
 }
 
-const trackHours = async (page, line) => {
+const assignSelectFromValue = async (page, selector, value) => {
+    //await page.select(selector, value);
+	await page.click(selector);
+	await page.waitFor(100);
+	for(let j = 0; j < value; j++)
+		await page.keyboard.press('ArrowDown');
+	await page.keyboard.press('Enter');
+}
+
+const trackHours = async (page, i, line) => {
     if (line && line.length > 0) {
         try {
             const [date, project, hours, taskCategory, taskDescription, comments, focalPoint] = line;
@@ -55,15 +67,19 @@ const trackHours = async (page, line) => {
                 await page.type('#ctl00_ContentPlaceHolder_CommentsTextBox', comments);
                 // Dropdown selects
                 await assignSelectValueFromText(page, '#ctl00_ContentPlaceHolder_idProyectoDropDownList', project);
-                // Wait until the dropdown is filled
+                // Wait until the dropdown is filled 
                 await page.waitForTimeout(500);
-                await assignSelectValueFromText(page, '#ctl00_ContentPlaceHolder_idFocalPointClientDropDownList', focalPoint);
                 await assignSelectValueFromText(page, '#ctl00_ContentPlaceHolder_idCategoriaTareaXCargoLaboralDropDownList', taskCategory);
                 // Wait until the dropdown is filled
-                await page.waitForTimeout(500);
+                await page.waitForTimeout(850);
                 await assignSelectValueFromText(page, '#ctl00_ContentPlaceHolder_idTareaXCargoLaboralDownList', taskDescription);
-
-                // Submit
+                // Wait until the dropdown is filled
+                if (i == 0) {
+					await page.waitForTimeout(100);
+					await assignSelectFromValue(page, '#ctl00_ContentPlaceHolder_idFocalPointClientDropDownList', focalPoint);
+                }
+				await page.waitForTimeout(100);
+                // Submit 
                 await page.click('#ctl00_ContentPlaceHolder_btnAceptar');
                 await page.waitForNavigation();
             }
@@ -81,7 +97,7 @@ const processTrackData = async (page, filePath) => {
         const fileData = fs.readFileSync(filePath, 'utf8');
         const fileRecords = fileData.split('\n');
         for (let i = 0; i < fileRecords.length; i++) {
-            await trackHours(page, fileRecords[i].split('\t'));
+            await trackHours(page, i, fileRecords[i].split('\t'));
         }
         return { status: 'ok' }
     } catch (e) {
@@ -111,6 +127,6 @@ const processTrackData = async (page, filePath) => {
     }
 
     // Close
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
     await browser.close();
 })();
