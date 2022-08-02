@@ -4,10 +4,12 @@
   "description": "BairesDev Time Tracker",
   "main": "track.js",
   "dependencies": {
-    "dotenv": "^10.0.0",
-    "puppeteer": "^10.4.0"
+    "chrome-cookies-secure": "^2.0.0",
+    "dotenv": "^16.0.1",
+    "puppeteer": "^15.5.0",
+    "puppeteer-extra": "^3.3.4",
+    "puppeteer-extra-plugin-stealth": "^2.11.0"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
