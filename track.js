@@ -1,6 +1,9 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra')
 const fs = require('fs');
 const dotenv = require('dotenv');
+
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
 
 dotenv.config();
 const TT_URL = 'https://timetracker.bairesdev.com';
@@ -100,6 +103,8 @@ const processTrackData = async (page, filePath) => {
     await page.goto(TT_URL);
     ;
 
+    // Give time to cloudflare to validate the page
+    await page.waitForTimeout(5000);
     // Log in with credentials in environment
     const result = await login(page);
     if (result.status === 'ok') {
